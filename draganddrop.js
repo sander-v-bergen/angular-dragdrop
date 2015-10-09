@@ -116,52 +116,55 @@
 
             function dragstartHandler(e) {
                 var isDragAllowed = !isDragHandleUsed || dragTarget.classList.contains(dragHandleClass);
+                element.bind('mousemove', startDrag);
+                
+                function startDrag(e) {
+                    if (isDragAllowed) {
+                        var sendChannel = attrs.dragChannel || 'defaultchannel';
+                        var dragData = '';
+                        if (attrs.drag) {
+                            dragData = scope.$eval(attrs.drag);
+                        }
 
-                if (isDragAllowed) {
-                    var sendChannel = attrs.dragChannel || 'defaultchannel';
-                    var dragData = '';
-                    if (attrs.drag) {
-                        dragData = scope.$eval(attrs.drag);
-                    }
+                        var dragImage = attrs.dragImage || null;
 
-                    var dragImage = attrs.dragImage || null;
+                        element.addClass(draggingClass);
+                        element.bind('$destroy', dragendHandler);
 
-                    element.addClass(draggingClass);
-                    element.bind('$destroy', dragendHandler);
+                        //Code to make sure that the setDragImage is available. IE 10, 11, and Opera do not support setDragImage.
+                        var hasNativeDraggable = !(document.uniqueID || window.opera);
 
-                    //Code to make sure that the setDragImage is available. IE 10, 11, and Opera do not support setDragImage.
-                    var hasNativeDraggable = !(document.uniqueID || window.opera);
-
-                    //If there is a draggable image passed in, then set the image to be dragged.
-                    if (dragImage && hasNativeDraggable) {
-                        var dragImageFn = $parse(attrs.dragImage);
-                        scope.$apply(function() {
-                            var dragImageParameters = dragImageFn(scope, {$event: e});
-                            if (dragImageParameters) {
-                                if (angular.isString(dragImageParameters)) {
-                                    dragImageParameters = $dragImage.generate(dragImageParameters);
+                        //If there is a draggable image passed in, then set the image to be dragged.
+                        if (dragImage && hasNativeDraggable) {
+                            var dragImageFn = $parse(attrs.dragImage);
+                            scope.$apply(function() {
+                                var dragImageParameters = dragImageFn(scope, {$event: e});
+                                if (dragImageParameters) {
+                                    if (angular.isString(dragImageParameters)) {
+                                        dragImageParameters = $dragImage.generate(dragImageParameters);
+                                    }
+                                    if (dragImageParameters.image) {
+                                        var xOffset = dragImageParameters.xOffset || 0,
+                                            yOffset = dragImageParameters.yOffset || 0;
+                                        e.dataTransfer.setDragImage(dragImageParameters.image, xOffset, yOffset);
+                                    }
                                 }
-                                if (dragImageParameters.image) {
-                                    var xOffset = dragImageParameters.xOffset || 0,
-                                        yOffset = dragImageParameters.yOffset || 0;
-                                    e.dataTransfer.setDragImage(dragImageParameters.image, xOffset, yOffset);
-                                }
-                            }
-                        });
-                    } else if (attrs.dragImageElementId) {
-                        setDragElement(e, attrs.dragImageElementId);
+                            });
+                        } else if (attrs.dragImageElementId) {
+                            setDragElement(e, attrs.dragImageElementId);
+                        }
+
+                        var transferDataObject = {data: dragData, channel: sendChannel};
+                        var transferDataText = angular.toJson(transferDataObject);
+
+                        e.dataTransfer.setData('text', transferDataText);
+                        e.dataTransfer.effectAllowed = 'copyMove';
+
+                        $rootScope.$broadcast('ANGULAR_DRAG_START', e, sendChannel, transferDataObject);
                     }
-
-                    var transferDataObject = {data: dragData, channel: sendChannel};
-                    var transferDataText = angular.toJson(transferDataObject);
-
-                    e.dataTransfer.setData('text', transferDataText);
-                    e.dataTransfer.effectAllowed = 'copyMove';
-
-                    $rootScope.$broadcast('ANGULAR_DRAG_START', e, sendChannel, transferDataObject);
-                }
-                else {
-                    e.preventDefault();
+                    else {
+                        e.preventDefault();
+                    }
                 }
             }
         };
