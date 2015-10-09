@@ -7,12 +7,12 @@
 
     function determineEffectAllowed(e) {
         // Chrome doesn't set dropEffect, so we have to work it out ourselves
-        if (typeof e.dataTransfer !== 'undefined' && e.dataTransfer.dropEffect === 'none') {
-            if (e.dataTransfer.effectAllowed === 'copy' ||
-                e.dataTransfer.effectAllowed === 'move') {
-                e.dataTransfer.dropEffect = e.dataTransfer.effectAllowed;
-            } else if (e.dataTransfer.effectAllowed === 'copyMove' || e.dataTransfer.effectAllowed === 'copymove') {
-                e.dataTransfer.dropEffect = e.ctrlKey ? 'copy' : 'move';
+        if (typeof e.originalEvent.dataTransfer !== 'undefined' && e.originalEvent.dataTransfer.dropEffect === 'none') {
+            if (e.originalEvent.dataTransfer.effectAllowed === 'copy' ||
+                e.originalEvent.dataTransfer.effectAllowed === 'move') {
+                e.originalEvent.dataTransfer.dropEffect = e.originalEvent.dataTransfer.effectAllowed;
+            } else if (e.originalEvent.dataTransfer.effectAllowed === 'copyMove' || e.originalEvent.dataTransfer.effectAllowed === 'copymove') {
+                e.originalEvent.dataTransfer.dropEffect = e.ctrlKey ? 'copy' : 'move';
             }
         }
     }
@@ -22,8 +22,8 @@
         return;
     }
 
-    if (window.jQuery && (-1 === window.jQuery.event.props.indexOf('dataTransfer'))) {
-        window.jQuery.event.props.push('dataTransfer');
+    if (window.jQuery && (-1 === window.jQuery.event.props.indexOf('originalEvent.dataTransfer'))) {
+        window.jQuery.event.props.push('originalEvent.dataTransfer');
     }
 
     var module = angular.module('ang-drag-drop', []);
@@ -69,7 +69,7 @@
 
                 determineEffectAllowed(e);
 
-                if (e.dataTransfer && e.dataTransfer.dropEffect !== 'none') {
+                if (e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.dropEffect !== 'none') {
                     if (attrs.onDropSuccess) {
                         var onDropSuccessFn = $parse(attrs.onDropSuccess);
                         scope.$evalAsync(function() {
@@ -90,7 +90,7 @@
             function setDragElement(e, dragImageElementId) {
                 var dragImageElementFn;
 
-                if (!(e && e.dataTransfer && e.originalEvent.dataTransfer.setDragImage)) {
+                if (!(e && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.setDragImage)) {
                     return;
                 }
 
@@ -116,7 +116,7 @@
 
             function dragstartHandler(e) {
                 var isDragAllowed = !isDragHandleUsed || dragTarget.classList.contains(dragHandleClass);
-
+                
                 if (isDragAllowed) {
                     var sendChannel = attrs.dragChannel || 'defaultchannel';
                     var dragData = '';
@@ -155,8 +155,8 @@
                     var transferDataObject = {data: dragData, channel: sendChannel};
                     var transferDataText = angular.toJson(transferDataObject);
 
-                    e.dataTransfer.setData('text', transferDataText);
-                    e.dataTransfer.effectAllowed = 'copyMove';
+                    e.originalEvent.dataTransfer.setData('text', transferDataText);
+                    e.originalEvent.dataTransfer.effectAllowed = 'copyMove';
 
                     $rootScope.$broadcast('ANGULAR_DRAG_START', e, sendChannel, transferDataObject);
                 }
@@ -253,7 +253,7 @@
                     e.stopPropagation(); // Necessary. Allows us to drop.
                 }
 
-                var sendData = e.dataTransfer.getData('text');
+                var sendData = e.originalEvent.dataTransfer.getData('text');
                 sendData = angular.fromJson(sendData);
 
                 determineEffectAllowed(e);
@@ -283,7 +283,7 @@
                 if (e.stopPropagation) {
                     e.stopPropagation();
                 }
-                e.dataTransfer.dropEffect = 'none';
+                e.originalEvent.dataTransfer.dropEffect = 'none';
                 return false;
             }
 
