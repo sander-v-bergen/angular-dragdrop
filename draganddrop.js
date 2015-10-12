@@ -42,7 +42,7 @@
                 $(this).data('href', $(this).attr('href'));
                 $(this).removeAttr('href');
               }
-            }).on('mouseup', function() {
+            }).on('mouseup touchend', function() {
               if ($(this).is('a')) {
                 $(this).attr('href', $(this).data('href'));
               }
