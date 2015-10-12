@@ -46,6 +46,7 @@
               console.log('mouseup/touchend');
               if ($(this).is('a')) {
                 console.log('A element');
+                console.log($(this).data('href'));
                 $(this).attr('href', $(this).data('href'));
               }
             }).on('click', function() {
