@@ -37,21 +37,21 @@
 
             element.attr('draggable', false);
 
-            $('.task-link').attr('draggable', true).on('mousedown touchstart', function() {
-              if ($(this).is('a')) {
-                $(this).data('href', $(this).attr('href'));
-                $(this).removeAttr('href');
-              }
-            }).on('mouseup touchend', function() {
-              console.log('mouseup/touchend');
-              if ($(this).is('a')) {
-                console.log('A element');
-                console.log($(this).data('href'));
-                $(this).attr('href', $(this).data('href'));
-              }
-            }).on('click', function() {
-              console.log(this.href);
-            });
+            // $('.task-link').attr('draggable', true).on('mousedown touchstart', function() {
+            //   if ($(this).is('a')) {
+            //     $(this).data('href', $(this).attr('href'));
+            //     $(this).removeAttr('href');
+            //   }
+            // }).on('mouseup touchend', function() {
+            //   console.log('mouseup/touchend');
+            //   if ($(this).is('a')) {
+            //     console.log('A element');
+            //     console.log($(this).data('href'));
+            //     $(this).attr('href', $(this).data('href'));
+            //   }
+            // }).on('click', function() {
+            //   console.log(this.href);
+            // });
 
             scope.$watch(attrs.uiDraggable, function(newValue) {
                 if (newValue) {
