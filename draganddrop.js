@@ -37,25 +37,25 @@
 
             element.attr('draggable', false);
 
-            $('.task-link').attr('draggable', true).on('mousedown touchstart', function() {
-              console.log('This 1');
-              console.log($(this));
-              if ($(this).children('a')) {
-                console.log('This 2');
-                console.log($(this).children('a'));
-                $(this).children('a').data('href', $(this).children('a').attr('href'));
-                $(this).children('a').removeAttr('href');
-              }
-            }).on('mouseup touchend', function() {
-              console.log('mouseup/touchend');
-              if ($(this).children('a')) {
-                console.log('A element');
-                console.log($(this).children('a').data('href'));
-                $(this).children('a').attr('href', $(this).children('a').data('href'));
-              }
-            }).on('click', function() {
-              console.log(this.href);
-            });
+            // $('.task-link').attr('draggable', true).on('mousedown touchstart', function() {
+            //   console.log('This 1');
+            //   console.log($(this));
+            //   if ($(this).children('a')) {
+            //     console.log('This 2');
+            //     console.log($(this).children('a'));
+            //     $(this).children('a').data('href', $(this).children('a').attr('href'));
+            //     $(this).children('a').removeAttr('href');
+            //   }
+            // }).on('mouseup touchend', function() {
+            //   console.log('mouseup/touchend');
+            //   if ($(this).children('a')) {
+            //     console.log('A element');
+            //     console.log($(this).children('a').data('href'));
+            //     $(this).children('a').attr('href', $(this).children('a').data('href'));
+            //   }
+            // }).on('click', function() {
+            //   console.log(this.href);
+            // });
 
             scope.$watch(attrs.uiDraggable, function(newValue) {
                 if (newValue) {
